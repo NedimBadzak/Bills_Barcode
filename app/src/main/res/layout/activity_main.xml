@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="10dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="10dp"
+    tools:context="com.nedim.probabarcode.MainActivity">
+
+    <Button
+        android:id="@+id/btnVoda"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Vodovod i Kanalizacija" />
+    <Button
+        android:id="@+id/btnStruja"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Elektroprivreda" />
+    <Button
+        android:id="@+id/btnRad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rad" />
+    <Button
+        android:id="@+id/btnSarajevoStan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sarajevo Stan" />
+    <Button
+        android:id="@+id/btnTelemach"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Telemach" />
+    <Button
+        android:id="@+id/btnToplane"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Toplane" />
+    <Button
+        android:id="@+id/btnHetig"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hetig" />
+
+</LinearLayout>

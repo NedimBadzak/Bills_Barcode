@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "506174454617",
+    "project_id": "proba-barcode",
+    "storage_bucket": "proba-barcode.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:506174454617:android:fdd57ee9c94e8191bfaa48",
+        "android_client_info": {
+          "package_name": "com.nedim.probabarcode"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "506174454617-6ev242k1v7cj9n7b5uijvocb34734eqo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqKn82z_NT1RHkbsHCvEengALdOHJoOcc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "506174454617-6ev242k1v7cj9n7b5uijvocb34734eqo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
