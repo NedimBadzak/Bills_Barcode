@@ -11,20 +11,22 @@ import java.util.Map;
 
 public class BillDAO {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    String ime, skenirano;
-    BillDAO(String ime, String skenirano) {
-        this.ime = ime;
-        this.skenirano = skenirano;
+    Racun racun;
+
+    BillDAO(Racun racun) {
+        this.racun = racun;
     }
+
 
     public void insert() {
         Map<String, Object> bill = new HashMap<>();
-        bill.put("ime", ime);
-        bill.put("skenirano", skenirano);
+        bill.put("ime", racun.getIme());
+        bill.put("skenirano", racun.getSkenirano());
 
         db.collection("bills")
                 .add(bill)
                 .addOnSuccessListener(documentReference -> Log.d("TAGIC", "Insertovan sa id: " + documentReference.getId()))
                 .addOnFailureListener(documentReference -> Log.d("TAGIC", "Failed"));
     }
+
 }
