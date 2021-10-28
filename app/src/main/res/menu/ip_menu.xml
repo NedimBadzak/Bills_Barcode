@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/ipSettings"
+        android:title="IP settings" />
+    <item
+        android:id="@+id/locationSettings"
+        android:title="Location" />
+    <item
+        android:id="@+id/fromImageSettings"
+        android:title="From Image" />
+    <item
+        android:id="@+id/getRefFromDB"
+        android:title="Get Reference From Database" />
+</menu>

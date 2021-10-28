@@ -8,9 +8,13 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -23,7 +27,10 @@ import com.google.zxing.integration.android.IntentResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -69,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
             integrator.setCameraId(0);
             integrator.setBeepEnabled(false);
             integrator.setBarcodeImageEnabled(false);
+            integrator.setTorchEnabled(true);
             klikaniButton = button.getText().toString();
             integrator.initiateScan();
 
@@ -85,10 +93,11 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
             } else {
                 Log.d("MainActivity", "Scanned");
+                Log.d("TAGIC", "Scanned: " + result.getContents().toString());
                 Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 Racun racun = napraviRacun(dajZamjenu(klikaniButton), result.getContents());
 //                billDAO.insert();
-                insert(racun);
+                if(racun.getIznos() != 0) insert(racun);
                 ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData clip = ClipData.newPlainText(racun.getIme(), racun.getReferenca());
                 clipboard.setPrimaryClip(clip);
@@ -101,22 +110,61 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.ip_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.ipSettings:
+                startActivity(new Intent(this, IPSettingsActivity.class));
+                return true;
+            case R.id.locationSettings:
+                startActivity(new Intent(this, LocationSettingsActivity.class));
+                return true;
+            case R.id.fromImageSettings:
+                startActivity(new Intent(this, FromImage.class));
+            case R.id.getRefFromDB:
+                startActivity(new Intent(this, GetReferenceFromDatabase.class));
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     private void insert(Racun racun) {
+        Log.d("TAGIC", "iznos je: " + racun.getIznos());
         JSONObject jsonObject = new JSONObject();
+        Date date = Calendar.getInstance().getTime();
         try {
             jsonObject.put("sta", racun.getIme());
             jsonObject.put("iznos", racun.getIznos());
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        SharedPreferences sharedPreferences = this.getSharedPreferences(
+                "postavke",
+                Context.MODE_PRIVATE
+        );
+        String location = "";
+        if (sharedPreferences.getString("location", "pofe").equals("pofe")) {
+            location = "pofe";
+        } else {
+            location = sharedPreferences.getString("location", "pofe");
+        }
         HashMap<String, String> params = new HashMap<>();
         params.put("requestReason", "insertPaidBill");
         params.put("sta", racun.getIme());
+        params.put("referenca", racun.getReferenca());
         params.put("iznos", String.valueOf(racun.getIznos()));
         params.put("placeno", String.valueOf(1));
-        params.put("godina", String.valueOf(2021));
-        params.put("lokacija", "pofe");
-        params.put("mjesec", String.valueOf(8));
+        params.put("godina", new SimpleDateFormat("YYYY").format(date).toString());
+        params.put("lokacija", location);
+        params.put("mjesec", new SimpleDateFormat("MM").format(date).toString());
         SendPOST sendPOST = new SendPOST(this, params);
         sendPOST.execute();
     }
@@ -130,8 +178,11 @@ public class MainActivity extends AppCompatActivity {
             racun = new Racun("ssiznos", referenca, 15.20);
         } else if ("toplaneiznos".equals(ime)) {
             String referenca = skenirano.substring(0, skenirano.indexOf(';'));
-            String km = skenirano.substring(skenirano.indexOf(';') + 1, skenirano.indexOf(';', skenirano.indexOf(';') + 1));
-            String kf = skenirano.substring(skenirano.indexOf(';', skenirano.indexOf(';') + 1) + 1);
+            Log.v("TAGIC", "Referenca" + referenca);
+            Log.v("TAGIC", "prvi substring" + skenirano.indexOf(';') + 1);
+            Log.v("TAGIC", "drugi substring" + skenirano.indexOf(';', skenirano.indexOf(';') + 1));
+            String km = skenirano.substring(skenirano.indexOf(';') + 1, skenirano.indexOf(','));
+            String kf = skenirano.substring(skenirano.indexOf(',') + 1);
             String pare = km + "." + kf;
             racun = new Racun("toplaneiznos", referenca, Double.parseDouble(pare));
         } else if ("radiznos".equals(ime)) {
@@ -149,21 +200,13 @@ public class MainActivity extends AppCompatActivity {
             builder.setView(input);
 
             // Set up the buttons
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    racun.setIznos(Double.parseDouble(input.getText().toString()));
-                }
+            builder.setPositiveButton("OK", (dialog, which) -> {
+                racun.setIznos(Double.parseDouble(input.getText().toString()));
+                insert(racun);
             });
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
+            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
             builder.show();
-
         }
         return racun;
     }
