@@ -1,5 +1,7 @@
 package com.nedim.probabarcode;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
@@ -9,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,7 +43,7 @@ public class RequestHandler {
             OutputStream os = conn.getOutputStream();
 
             BufferedWriter writer = new BufferedWriter(
-                    new OutputStreamWriter(os, "UTF-8"));
+                    new OutputStreamWriter(os, StandardCharsets.UTF_8));
             writer.write(getPostDataString(postDataParams));
 
             writer.flush();
@@ -58,6 +61,7 @@ public class RequestHandler {
                     sb.append(response);
                 }
             }
+            Log.d("ReqHandler TAGIC response", sb.toString());
 
         } catch (Exception e) {
             e.printStackTrace();

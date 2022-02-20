@@ -93,15 +93,19 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
             } else {
                 Log.d("MainActivity", "Scanned");
-                Log.d("TAGIC", "Scanned: " + result.getContents().toString());
-                Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
-                Racun racun = napraviRacun(dajZamjenu(klikaniButton), result.getContents());
+                Log.d("MainActivity TAGIC resultContents", "Scanned: " + result.getContents());
+                try {
+                    Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+                    Racun racun = napraviRacun(dajZamjenu(klikaniButton), result.getContents());
+                } catch (Exception e) {
+                    Toast.makeText(this, "Nevazeci scan, molimo ponovite", Toast.LENGTH_SHORT).show();
+                }
 //                billDAO.insert();
                 if(racun.getIznos() != 0) insert(racun);
                 ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData clip = ClipData.newPlainText(racun.getIme(), racun.getReferenca());
                 clipboard.setPrimaryClip(clip);
-                Log.d("TAGIC", "Racun: " + "(" + racun.getIme() + ") sa referencom: "
+                Log.d("MainActivity TAGIC poruka", "Racun: " + "(" + racun.getIme() + ") sa referencom: "
                         + racun.getReferenca() + " i iznosom: " + racun.getIznos());
             }
         } else {
@@ -150,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
                 "postavke",
                 Context.MODE_PRIVATE
         );
-        String location = "";
+        String location;
         if (sharedPreferences.getString("location", "pofe").equals("pofe")) {
             location = "pofe";
         } else {
@@ -162,9 +166,9 @@ public class MainActivity extends AppCompatActivity {
         params.put("referenca", racun.getReferenca());
         params.put("iznos", String.valueOf(racun.getIznos()));
         params.put("placeno", String.valueOf(1));
-        params.put("godina", new SimpleDateFormat("YYYY").format(date).toString());
+        params.put("godina", new SimpleDateFormat("YYYY").format(date));
         params.put("lokacija", location);
-        params.put("mjesec", new SimpleDateFormat("MM").format(date).toString());
+        params.put("mjesec", new SimpleDateFormat("MM").format(date));
         SendPOST sendPOST = new SendPOST(this, params);
         sendPOST.execute();
     }
@@ -207,6 +211,9 @@ public class MainActivity extends AppCompatActivity {
             builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
             builder.show();
+        } else if ("teleiznos".equals(ime)) {
+            String bezZnakova = skenirano.replaceAll("\\D+", "");
+            racun = new Racun("teleiznos", bezZnakova, 47.50);
         }
         return racun;
     }

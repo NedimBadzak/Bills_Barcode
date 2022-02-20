@@ -56,7 +56,7 @@ class SendPOST extends AsyncTask<Void, Void, String> {
                 "postavke",
                 Context.MODE_PRIVATE
         );
-        String ip = "";
+        String ip;
         if (sharedPreferences.getString("ip", "0.0.0.0").equals("0.0.0.0")) {
             ip = "192.168.0.105";
         } else {
@@ -73,12 +73,13 @@ class SendPOST extends AsyncTask<Void, Void, String> {
         pdLoading.dismiss();
 
         try {
-            Log.d("TAGIC", s);
+            //Log.d("SendPOST TAGIC ", s);
+            Log.d("SendPOST TAGIC", "JSON OUTPUT:" + s);
             //converting response to json object
             JSONObject obj = new JSONObject(s);
             //if no error in response
             if(obj.getInt("success") == 3) {
-                Log.v("TAGIC", obj.getString("message"));
+                Log.v("SendPOST TAGIC onSuccess", obj.getString("message"));
                 JSONArray jsonArray = new JSONArray(obj.getString("message"));
                 Toast.makeText(mainActivityContext, "Reference fethed in clipboard", Toast.LENGTH_SHORT).show();
                 ClipboardManager clipboard = (ClipboardManager) mainActivityContext.getSystemService(Context.CLIPBOARD_SERVICE);
@@ -92,7 +93,7 @@ class SendPOST extends AsyncTask<Void, Void, String> {
         } catch (JSONException e) {
             e.printStackTrace();
             Toast.makeText(mainActivityContext, "Exception: " + e, Toast.LENGTH_LONG).show();
-            Log.v("LOGIC", e.getMessage().toString());
+            Log.v("SendPOST LOGIC jsonExcept", e.getMessage().toString());
         }
     }
 }
