@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
             location = sharedPreferences.getString("location", "pofe");
         }
         HashMap<String, String> params = new HashMap<>();
-        params.put("requestReason", "insertPaidBill");
+//        params.put("requestReason", "insertPaidBill");
         params.put("sta", racun.getIme());
         params.put("referenca", racun.getReferenca());
         params.put("iznos", String.valueOf(racun.getIznos()));
@@ -213,7 +213,10 @@ public class MainActivity extends AppCompatActivity {
             builder.show();
         } else if ("teleiznos".equals(ime)) {
             String bezZnakova = skenirano.replaceAll("\\D+", "");
-            racun = new Racun("teleiznos", bezZnakova, 47.50);
+            String bezZnakova2 = bezZnakova.substring(0,15);
+            String[] bezZnakova3 = bezZnakova.split("000");
+            if(bezZnakova2.equals(bezZnakova3[0]))
+                racun = new Racun("teleiznos", bezZnakova3[0], Double.parseDouble(bezZnakova3[1].substring(0,2) + "." + bezZnakova3[1].substring(2)));
         }
         return racun;
     }

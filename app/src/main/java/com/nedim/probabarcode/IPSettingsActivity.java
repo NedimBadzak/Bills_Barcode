@@ -20,6 +20,7 @@ public class IPSettingsActivity extends AppCompatActivity {
         EditText editText = findViewById(R.id.ipEditText);
         Button ipButton = findViewById(R.id.ipButton);
 
+        editText.setText(sharedPreferences.getString("ip", "0.0.0.0"));
         ipButton.setOnClickListener(v -> {
 //            editText.getText().toString();
             SharedPreferences.Editor editor = sharedPreferences.edit();

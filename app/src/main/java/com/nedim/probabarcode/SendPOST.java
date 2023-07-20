@@ -64,7 +64,8 @@ class SendPOST extends AsyncTask<Void, Void, String> {
         }
 
         //returing the response
-        return requestHandler.sendPostRequest("http://" + ip + "/android/index.php", params);
+        Log.d("TAGIC", ip);
+        return requestHandler.sendPostRequest("https://" + ip + "/api/insertPaid", params);
     }
 
     @Override
