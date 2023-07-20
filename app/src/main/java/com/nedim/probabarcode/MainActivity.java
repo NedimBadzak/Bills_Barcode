@@ -6,10 +6,10 @@ import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,6 +33,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
     private Button buttonVoda;
@@ -42,13 +45,19 @@ public class MainActivity extends AppCompatActivity {
     private Button buttonToplane;
     private Button buttonHetig;
     private String mText = "";
+    private TextView apiStatus;
     private Racun racun;
     private String klikaniButton = null;
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        SendGET sendGET = new SendGET(this, "/api/checkStatus", apiStatus);
         buttonVoda = (Button) this.findViewById(R.id.btnVoda);
         buttonStruja = (Button) this.findViewById(R.id.btnStruja);
         buttonRad = (Button) this.findViewById(R.id.btnRad);
@@ -56,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         buttonTelemach = (Button) this.findViewById(R.id.btnTelemach);
         buttonToplane = (Button) this.findViewById(R.id.btnToplane);
         buttonHetig = (Button) this.findViewById(R.id.btnHetig);
+        apiStatus = (TextView) this.findViewById(R.id.textView2);
         final Activity activity = this;
         clicked(buttonVoda, activity);
         clicked(buttonStruja, activity);
@@ -65,6 +75,25 @@ public class MainActivity extends AppCompatActivity {
         clicked(buttonToplane, activity);
         clicked(buttonHetig, activity);
 
+
+            final Handler handler = new Handler();
+            Timer timer = new Timer();
+            TimerTask doAsynchronousTask = new TimerTask() {
+                @Override
+                public void run() {
+                    handler.post(() -> updateApiStatus());
+                }
+            };
+            timer.schedule(doAsynchronousTask, 0, 10000);
+
+
+
+    }
+
+    private boolean updateApiStatus() {
+        SendGET sendGET = new SendGET(this, "/api/checkStatus", apiStatus);
+        sendGET.execute();
+        return false;
     }
 
     private void clicked(Button button, Activity activity) {

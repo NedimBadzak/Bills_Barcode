@@ -27,6 +27,62 @@ public class RequestHandler {
     //this method will send a post request to the specified url
     //in this app we are using only post request
     //in the hashmap we have the data to be sent to the server in keyvalue pairs
+    public String sendGetRequest(String requestURL) {
+        URL url;
+        StringBuilder sb = new StringBuilder();
+        try {
+            url = new URL(requestURL);
+//            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//            conn.setReadTimeout(15000);
+//            conn.setConnectTimeout(15000);
+//            conn.setRequestMethod("GET");
+////            conn.setDoInput(true);
+//            conn.setDoOutput(true);
+//
+//            OutputStream os = conn.getOutputStream();
+//
+//            BufferedWriter writer = new BufferedWriter(
+//                    new OutputStreamWriter(os, StandardCharsets.UTF_8));
+//
+//            writer.flush();
+//            writer.close();
+//            os.close();
+//            int responseCode = conn.getResponseCode();
+//
+//            if (responseCode == HttpsURLConnection.HTTP_OK) {
+//
+//                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//                sb = new StringBuilder();
+//                String response;
+//
+//                while ((response = br.readLine()) != null) {
+//                    sb.append(response);
+//                }
+//            }
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            int responseCode = con.getResponseCode();
+            System.out.println("GET Response Code :: " + responseCode);
+            if (responseCode == HttpURLConnection.HTTP_OK) { // success
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                String inputLine;
+
+                while ((inputLine = in.readLine()) != null) {
+                    sb.append(inputLine);
+                }
+                in.close();
+                // print result
+                Log.v("LOGIC", sb.toString());
+            } else {
+                Log.v("LOGIC", "GET request did not work.");
+            }
+            Log.d("ReqHandler TAGIC response", sb.toString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sb.toString();
+    }
     public String sendPostRequest(String requestURL, HashMap<String, String> postDataParams) {
         URL url;
 

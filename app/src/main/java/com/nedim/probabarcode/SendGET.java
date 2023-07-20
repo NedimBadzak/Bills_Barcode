@@ -1,0 +1,94 @@
+package com.nedim.probabarcode;
+
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
+import android.util.Log;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+class SendGET extends AsyncTask<Void, Void, String> {
+
+    public Context mainActivityContext;
+    ProgressDialog pdLoading;
+
+    TextView textView;
+
+    String URL;
+    public SendGET(Activity mainActivity, String URL, TextView textView) {
+        pdLoading = new ProgressDialog(mainActivity);
+        this.mainActivityContext = mainActivity.getApplicationContext();
+        this.textView = textView;
+        this.URL = URL;
+    }
+
+
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+
+        //this method will be running on UI thread
+//        pdLoading.setMessage("\tLoading...");
+//        pdLoading.setCancelable(false);
+//        pdLoading.show();
+    }
+
+    @Override
+    protected String doInBackground(Void... voids) {
+        //creating request handler object
+        RequestHandler requestHandler = new RequestHandler();
+        SharedPreferences sharedPreferences = mainActivityContext.getSharedPreferences(
+                "postavke",
+                Context.MODE_PRIVATE
+        );
+        String ip;
+        if (sharedPreferences.getString("ip", "0.0.0.0").equals("0.0.0.0")) {
+            ip = "192.168.0.105";
+        } else {
+            ip = sharedPreferences.getString("ip", "0.0.0.0");
+        }
+
+        //returing the response
+        Log.d("TAGIC", ip);
+        Log.d("TAGIC", "http://" + ip + URL);
+        return requestHandler.sendGetRequest("http://" + ip + URL);
+    }
+
+    @Override
+    protected void onPostExecute(String s) {
+        super.onPostExecute(s);
+        pdLoading.dismiss();
+
+        try {
+            //Log.d("SendPOST TAGIC ", s);
+            Log.d("SendGET TAGIC", "JSON OUTPUT:" + s);
+            //converting response to json object
+            JSONObject obj = new JSONObject(s);
+            //if no error in response
+            if (obj.getInt("success") == 1) {
+                Log.v("SendGET TAGIC onSuccess", obj.getString("message"));
+                textView.setText("Available");
+//                JSONArray jsonArray = new JSONArray(obj.getString("message"));
+//                Toast.makeText(mainActivityContext, "Reference fethed in clipboard", Toast.LENGTH_SHORT).show();
+//                ClipboardManager clipboard = (ClipboardManager) mainActivityContext.getSystemService(Context.CLIPBOARD_SERVICE);
+//                ClipData clip = ClipData.newPlainText(jsonArray.getJSONObject(0).getString("sta"), jsonArray.getJSONObject(0).getString("referenca"));
+//                clipboard.setPrimaryClip(clip);
+//            } else if(obj.getInt("success") == 1) {
+//                Toast.makeText(mainActivityContext, obj.getString("message"), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(mainActivityContext, obj.getString("message"), Toast.LENGTH_LONG).show();
+                textView.setText("Unavailable");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(mainActivityContext, "Exception: " + e, Toast.LENGTH_LONG).show();
+            Log.v("SendPOST LOGIC jsonExcept", e.getMessage().toString());
+        }
+    }
+}
